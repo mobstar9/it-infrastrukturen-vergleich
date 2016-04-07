@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:archimate="http://www.bolton.ac.uk/archimate" name="Archisurance" id="11f5304f" version="2.2.1">
+  <folder name="Business" id="8c90fdfa" type="business">
+    <folder name="Actors" id="fa63373b">
+      <element xsi:type="archimate:BusinessInterface" id="1544" name="mail"/>
+      <element xsi:type="archimate:BusinessInterface" id="1540" name="phone"/>
+      <element xsi:type="archimate:BusinessInterface" id="1542" name="GIM"/>
+      <element xsi:type="archimate:BusinessInterface" id="1538" name="e-mail"/>
+      <element xsi:type="archimate:BusinessInterface" id="1536" name="phone"/>
+      <element xsi:type="archimate:BusinessRole" id="528" name="Customer's Bank"/>
+      <element xsi:type="archimate:BusinessRole" id="521" name="Customer"/>
+      <element xsi:type="archimate:BusinessRole" id="507" name="Intermediary"/>
+      <element xsi:type="archimate:BusinessRole" id="514" name="Insurer"/>
+      <element xsi:type="archimate:BusinessRole" id="1368" name="Insurant"/>
+      <element xsi:type="archimate:BusinessCollaboration" id="733" name="Negotiation"/>
+      <element xsi:type="archimate:BusinessCollaboration" id="740" name="Contracting"/>
+      <element xsi:type="archimate:BusinessCollaboration" id="1546" name="collaboration"/>
+      <element xsi:type="archimate:BusinessActor" id="345" name="HRM"/>
+      <element xsi:type="archimate:BusinessActor" id="338" name="Product Development"/>
+      <element xsi:type="archimate:BusinessActor" id="296" name="Front Office"/>
+      <element xsi:type="archimate:BusinessActor" id="289" name="Intermediary Relations"/>
+      <element xsi:type="archimate:BusinessActor" id="282" name="Customer Relations"/>
+      <element xsi:type="archimate:BusinessActor" id="331" name="Finance"/>
+      <element xsi:type="archimate:BusinessActor" id="352" name="Document Processing SSC"/>
+      <element xsi:type="archimate:BusinessActor" id="324" name="Back Office"/>
+      <element xsi:type="archimate:BusinessActor" id="303" name="Home  &amp;  Away"/>
+      <element xsi:type="archimate:BusinessActor" id="310" name="Car"/>
+      <element xsi:type="archimate:BusinessActor" id="317" name="Legal Aid"/>
+      <element xsi:type="archimate:BusinessActor" id="275" name="Archisurance"/>
+      <element xsi:type="archimate:BusinessActor" id="1337" name="Client"/>
+      <element xsi:type="archimate:BusinessActor" id="402" name="Board"/>
+      <element xsi:type="archimate:BusinessActor" id="409" name="Director of Sales"/>
+      <element xsi:type="archimate:BusinessActor" id="423" name="Director of Finance"/>
+      <element xsi:type="archimate:BusinessActor" id="416" name="Director of Operations"/>
+    </folder>
+	</folder>
+</archimate:model>
