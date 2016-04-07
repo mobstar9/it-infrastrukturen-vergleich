@@ -1,9 +1,6 @@
 package de.maxflo.it.infrastruktur.archimate.vergleich.logic;
 
-import com.thoughtworks.xstream.XStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,14 +19,27 @@ import org.xml.sax.SAXException;
  * @author fn/mh
  */
 public class XMLFileReader {
-       
-    static Document doc;
-    static int count = 0;
+           
+
+/*
+    07.04.2016
+    
+    Mal so weit, dass man das File einparsen kann.
+*/
+    
+    private static boolean logging = true;
+
+    
+    private static Document doc;
+    private static int count = 0;
+    
+    
     
     public static void main(String[] args) {
         readFile();
         iterateFileTree();
     }
+    
     
     private static void readFile() {
 
@@ -44,11 +54,10 @@ public class XMLFileReader {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(XMLFileReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         doc = null;    
         try {
              doc = dBuilder.parse(archiFile);
-             
         } catch (SAXException ex) {
             Logger.getLogger(XMLFileReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -56,28 +65,23 @@ public class XMLFileReader {
         }
     }
 
-    /*
-       Angenommen archimate:model ist Ebene 0
-       Statische Ebenen, immer gleich viele oder dynamisch?
-       Habs jetzt mal als dynamischen XML Baum gemacht...
-    */
+/*
+   Angenommen archimate:model ist Ebene 0
+   Statische Ebenen, immer gleich viele oder dynamisch?
+   Habs jetzt mal als dynamischen XML Baum gemacht...
+*/
     private static void iterateFileTree() {
         //Normalisieren
         doc.getDocumentElement().normalize();
         
-        
-         Element root = doc.getDocumentElement();
-         System.out.println(root.getNodeName());
+        Element root = doc.getDocumentElement();
+        print(root.getNodeName());
 
 
-        
         //Ebenen innerhalb 
         //archimate:model
         NodeList allChilds = doc.getElementsByTagName("*");
-        
-        
-        
-       treeIterRek(allChilds);
+        treeIterRek(allChilds);
     }
 
 
@@ -85,17 +89,15 @@ public class XMLFileReader {
     //Rekurisiver XML Baumdurchlauf^^
     private static void treeIterRek(NodeList allChilds) {
         
-        System.out.println("-------TiefenEbene: "+count+++"--------");
-        
+        print("-------TiefenEbene: "+count+++"--------");
         for (int temp = 0; temp < allChilds.getLength(); temp++) {
             
             Node node = allChilds.item(temp);
             
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                System.out.print("NodeName= " + node.getNodeName() + " ");
-                System.out.print("NodeCont= " + node.getTextContent() +" ");
-                System.out.print("NodeVal= " + node.getNodeValue());   
-                System.out.print("\n"); 
+                print("NodeName= " + node.getNodeName() + " ");
+                print("NodeCont= " + node.getTextContent() +" ");
+                print("\n");
 
                 //Alle Attribute
                 if (node.hasAttributes()) {
@@ -104,9 +106,10 @@ public class XMLFileReader {
                     for (int i = 0; i < nodeMap.getLength(); i++) {
                         Node tempNode = nodeMap.item(i);
                         
-                        System.out.print("NodeAtt= " + tempNode.getNodeName()+ " ");
-                        System.out.print("NodeVal= " + tempNode.getNodeValue());   
-                        System.out.print("\n"); 
+                        print("NodeAtt= " + tempNode.getNodeName()+ " ");
+                        print("NodeVal= " + tempNode.getNodeValue());
+                        print("\n");
+
                     }
                     //Rek...
                     if (node.hasChildNodes()) {
@@ -114,6 +117,14 @@ public class XMLFileReader {
                     }
                 }
             }
+        }
+    }
+    
+    private static void print(String toPrint) {
+        if(logging) {
+            Logger.getLogger(XMLFileReader.class.getName()).log(Level.INFO, toPrint);
+        } else {
+            System.out.print(toPrint); 
         }
     }
 }
