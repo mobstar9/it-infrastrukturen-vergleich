@@ -22,6 +22,11 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import org.custommonkey.xmlunit.DetailedDiff;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceConstants;
+import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.Transform;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,14 +42,22 @@ import org.xml.sax.SAXException;
 public class XMLFileReader {
 /*
     
+    10.04.2016
+    Im PDF ist es so, dass Unterschiede zwischen 2 neu und alt erkannt werden
+    Beide Änderungen, also neu und alt müssen in ein gemeinsames XML Doc
+    ZB alt rot, neu grün
+    Hab die Files genauso modifiziert wie die in der PDF, das war die "BusinessCorporationView".
+    Es muss also aus beiden eine neue XML gebaut werden und quasi 2 Wege Unterschiede erkannt werden.
+    Also die Unterschiede kann XMLUnit ganz gut, 
+    müssten damit jetzt mit nem Builder die Änderungen in ne neue XML übertragen
+    
+    
     09.04.2016
     Eigener Vergleicher
-    ------------------
     Versuch, mal testweise beide "nebeneinander iterieren" und Änderungen rausschreiben
     Zeilen mail und phone vertauscht^^Noch nicht alle möglichen Fälle abgedeckt!!
     
     XMLUnit Vergleicher
-    ------------------
     Joa...scheint seine Arbeit gut zu machen kannst dir ja mal anschaun
 
     
@@ -59,7 +72,7 @@ public class XMLFileReader {
     private static Document doc;
     private static int count = 0;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SAXException, IOException {
         //readFile_SAX();
         //readFile_StAX();
         //readAndCompFilesSelfmade();
@@ -67,10 +80,14 @@ public class XMLFileReader {
         
     }
     
-    private static void readAndCompFilesLibrary() {
+private static void readAndCompFilesLibrary() throws SAXException, IOException  {
 
-        String fileOrg = "Archisurance_kurz.archimate";
-        String fileMod = "Archisurance_kurz_changed.archimate";
+        //String fileOrg = "Archisurance_kurz.archimate";
+        //String fileMod = "Archisurance_kurz_changed.archimate";
+
+        String fileOrg = "Archisurance_BusinessCorpV_Mod-CustInfoServ.archimate";
+        String fileMod = "Archisurance_BusinessCorpV_Mod-ClaimRegServ.archimate";
+        
 
         //Einzel Strings...nicht so optimal
         String line1 = "";
@@ -94,20 +111,77 @@ public class XMLFileReader {
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
 
-        DetailedDiff diff = null;
-        try {
-            diff = new DetailedDiff(XMLUnit.compareXML(line1, line2));
-        } catch (SAXException ex) {
-            Logger.getLogger(XMLFileReader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(XMLFileReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        List<?> allDifferences = diff.getAllDifferences();
         
-        print(diff.toString());
+        Diff aDiff = new Diff(line1,line2);
+        aDiff.overrideDifferenceListener(new DifferenceListener() {
+            @Override
+            public int differenceFound(Difference dfrnc) {
+
+                //Mod CustInf bzw. Org
+                Node n1 = dfrnc.getControlNodeDetail().getNode();
+                
+                //Mod ClaimRegServ bzw. Mod
+                Node n2 = dfrnc.getTestNodeDetail().getNode();
+                
+                
+                //TODO XML Daten extrahieren in neues File XMLBuilder etc...
+                
+                /*
+                    ZB File
+                        CustInfoSrv Teile 1225 3 Childs
+                        ClaimRegSrv Zeile 1225 2 Childs
+                       
+                */
+                print("Erkannte Änderung: "+dfrnc.getDescription());
+                print("Erkannte Änderung: "+dfrnc.getId());
+                print("Erkannte Änderung: "+DifferenceConstants.CHILD_NODELIST_LENGTH_ID);
+                print("Erkannte Änderung: "+dfrnc.getControlNodeDetail().getXpathLocation().toString());
+                print("Erkannte Änderung: "+dfrnc.toString());
+      
+                
+                
+                //Nach child node number muss Vergleicher neu gestartet werden
+                if(dfrnc.getDescription().equals("number of child nodes")) {
+                    //zB vorher 2, jetzt 3 also grün weil neu
+                    //zB vorher 3, jetzt 2 also rot weil alt
+                }
+                print("------------");
+                
+                //DEBUG !!!!!!!!!!!!!!!
+                //Nach der ersten Stoppen^^
+                System.exit(0); 
+                //DEBUG !!!!!!!!!!!!!!!!!!
+                
+                Transform t1 = new Transform(n1);
+                Transform t2 = new Transform(n2);
+                
+                return DifferenceListener.RETURN_ACCEPT_DIFFERENCE;
+          }
+
+            @Override
+            public void skippedComparison(Node node, Node node1) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        
+        //Alle Diffs...
+        DetailedDiff toCheck = new DetailedDiff(aDiff);
+        toCheck.getAllDifferences();
     }
     
+
+
+
+
+
+
+    /*
+    Ab hier "alt", aber evtl. noch als Builder verwendbar
+    Habs daweil mal dringelassen
+    ############################################################
+    ############################################################
+    ############################################################
+    */
     
     
   private static void readAndCompFilesSelfmade() {
@@ -352,7 +426,7 @@ public class XMLFileReader {
         treeIterRek(allChilds);
     }
     
-    //Rekurisiver XML Baumdurchlauf^^
+    //Rekursiver XML Baumdurchlauf^^
     private static void treeIterRek(NodeList allChilds) {
         
         print("-------TiefenEbene: "+count+++"--------");
